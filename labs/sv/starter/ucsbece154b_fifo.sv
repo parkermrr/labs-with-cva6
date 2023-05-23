@@ -33,7 +33,7 @@ always_comb begin
     head_d = head_q;
     tail_d = tail_q;
     numEntries_d = numEntries_q;
-    write_allowed = 0b'1;
+    write_allowed = 0'b1;
 
     if (pop_i && valid_o) begin
         head_d = (head_d == NR_ENTRIES - 1) ? '0 : head_d + 1;
@@ -41,7 +41,7 @@ always_comb begin
     end
     if (push_i && !full_o) begin
         tail_d = (tail_d == NR_ENTRIES - 1) ? '0 : tail_d + 1;
-        write_allowed = 1b'1;
+        write_allowed = 1'b1;
     end
 end
 
