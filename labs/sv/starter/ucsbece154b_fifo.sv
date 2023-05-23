@@ -50,7 +50,7 @@ always_ff @ (posedge clk) begin
         head_q <= '0;
         tail_q <= '0;
         numEntries_q <= '0;
-    end else
+    end else begin
         head_q <= head_d;
         tail_q <= tail_d;
         numEntries_q <= numEntries_d;
