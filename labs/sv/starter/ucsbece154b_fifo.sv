@@ -26,7 +26,7 @@ logic [3:0] numEntries_d, numEntries_q;
 logic write_allowed;
 
 assign full_o = (numEntries_q == NR_ENTRIES);
-assign valid_o = (numEntries_q =! 0);
+assign valid_o = (numEntries_q != 0);
 assign data_o = valid_o ? RAM[head_q] : '0;
 
 always_comb begin
