@@ -22,7 +22,7 @@ module ucsbece154b_fifo #(
 
 logic [DATA_WIDTH - 1:0] RAM [0: NR_ENTRIES - 1];
 logic [3:0] head_d, head_q, tail_d, tail_q;
-logic [3:0] numEntries_d, numEntries_q;
+logic [4:0] numEntries_d, numEntries_q;
 logic write_allowed;
 
 assign full_o = (numEntries_q == NR_ENTRIES);
