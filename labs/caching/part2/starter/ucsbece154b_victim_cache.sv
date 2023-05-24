@@ -31,8 +31,8 @@ module ucsbece154b_victim_cache #(
     input   logic [LINE_WIDTH-1:0]  wdata_i
 );
 
-localparam OFFSET_WIDTH = 1; // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
-localparam TAG_SIZE = 1; // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
+localparam OFFSET_WIDTH = $clog2(LINE_WIDTH); // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
+localparam TAG_SIZE = ADDR_WIDTH - $clog2(LINE_WIDTH); // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
 
 logic [TAG_SIZE-1:0] rtag, wtag;
 assign rtag = raddr_i[OFFSET_WIDTH +: TAG_SIZE]; // "indexed part-select" operator
@@ -62,15 +62,15 @@ struct packed {
     logic valid;
 } MEM_d, MEM_q;
 
-assign hit_o = 0; // TODO
-assign rdata_o = 0; // TODO
+assign hit_o = (rtag == MEM_q.tag); // TODO
+assign rdata_o = MEM_q.data; // TODO
 
 always_comb begin
     MEM_d = MEM_q;
     if (en_i && we_i) begin
-        MEM_d.data = '0; // TODO
-        MEM_d.tag = '0; // TODO
-        MEM_d.valid = '0; // TODO
+        MEM_d.data = wdata_i; // TODO
+        MEM_d.tag = wtag; // TODO
+        MEM_d.valid = 1'b1; // TODO
     end
 end
 always_ff @(posedge clk_i) begin
