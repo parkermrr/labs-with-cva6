@@ -90,8 +90,6 @@ end else if (NR_ENTRIES==2) begin : lru_bit
 // LRU is 1 bit to show which way should be replaced on a write
 //
 
-
-
 // cache memory
 struct packed {
     logic [LINE_WIDTH-1:0] data;
@@ -113,17 +111,17 @@ always_comb begin
     // assign read port
     for (i = 0; i < 2; i++) begin
         if (en_i && MEM_q[i].valid && (rtag==MEM_q[i].tag)) begin
-            hit_o = 0; // TODO
-            rdata_o = 0; // TODO
-            lru_d = 0; // TODO
+            hit_o = 1'b1; // TODO
+            rdata_o = MEM_q[i].data; // TODO
+            lru_d = i == 1 ? 0 : 1; // TODO
         end
     end
     // handle write port
     if (en_i && we_i) begin
-        MEM_d[lru_d].data = 0; // TODO
-        MEM_d[lru_d].tag = 0; // TODO
-        MEM_d[lru_d].valid = 0; // TODO
-        lru_d = 0; // TODO
+        MEM_d[lru_d].data = wdata_i; // TODO
+        MEM_d[lru_d].tag = wtag; // TODO
+        MEM_d[lru_d].valid = 1'b1; // TODO
+        lru_d = lru_d == 1 ? 0 : 1; // TODO
     end
 end
 always_ff @(posedge clk_i) begin
