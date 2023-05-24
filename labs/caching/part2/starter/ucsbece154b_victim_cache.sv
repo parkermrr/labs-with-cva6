@@ -31,8 +31,8 @@ module ucsbece154b_victim_cache #(
     input   logic [LINE_WIDTH-1:0]  wdata_i
 );
 
-localparam OFFSET_WIDTH = $clog2(LINE_WIDTH); // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
-localparam TAG_SIZE = ADDR_WIDTH - $clog2(LINE_WIDTH); // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
+localparam OFFSET_WIDTH = $clog2(LINE_WIDTH/8); // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
+localparam TAG_SIZE = ADDR_WIDTH - OFFSET_WIDTH; // TODO (in terms of ADDR_WIDTH and LINE_WIDTH)
 
 logic [TAG_SIZE-1:0] rtag, wtag;
 assign rtag = raddr_i[OFFSET_WIDTH +: TAG_SIZE]; // "indexed part-select" operator
@@ -62,7 +62,7 @@ struct packed {
     logic valid;
 } MEM_d, MEM_q;
 
-assign hit_o = (rtag == MEM_q.tag); // TODO
+assign hit_o = en_i && MEM_q.valid && (rtag == MEM_q.tag); // TODO
 assign rdata_o = MEM_q.data; // TODO
 
 always_comb begin
@@ -164,12 +164,15 @@ way_index_t lru_d, lru_q, mru_d, mru_q;
 
 function void lru_bump(input way_index_t way);
     // function to move way to MRU while maintaining DLL structure
-    MEM_d[MEM_d[way].mru].lru = MEM_d[way].lru; // TODO
-    MEM_d[MEM_d[way].lru].mru = MEM_d[way].mru; // TODO
-    lru_d = (lru_d == way) ? MEM_d[way].lru : lru_d; // TODO
-    MEM_d[way].lru = mru_d; // TODO
-    MEM_d[mru_d].mru = way; // TODO
-    mru_d = way; // TODO
+    if (way != lru_d) 
+        MEM_d[MEM_d[way].mru].lru = MEM_d[way].lru;
+    if (way != mru_d) 
+        MEM_d[MEM_d[way].lru].mru = MEM_d[way].mru;
+    if (way == lru_d) 
+        lru_d = MEM_d[way].mru;
+    MEM_d[way].lru = mru_d;
+    MEM_d[mru_d].mru = way;
+    mru_d = way;
 endfunction
 
 always_comb begin
