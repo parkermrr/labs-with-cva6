@@ -164,12 +164,12 @@ way_index_t lru_d, lru_q, mru_d, mru_q;
 
 function void lru_bump(input way_index_t way);
     // function to move way to MRU while maintaining DLL structure
-    MEM_d[MEM_d[way].mru].lru = '0; // TODO
-    MEM_d[MEM_d[way].lru].mru = '0; // TODO
-    lru_d = '0; // TODO
-    MEM_d[way].lru = '0; // TODO
-    MEM_d[mru_d].mru = '0; // TODO
-    mru_d = '0; // TODO
+    MEM_d[MEM_d[way].mru].lru = MEM_d[way].lru; // TODO
+    MEM_d[MEM_d[way].lru].mru = MEM_d[way].mru; // TODO
+    lru_d = (lru_d == way) ? MEM_d[way].lru : lru_d; // TODO
+    MEM_d[way].lru = mru_d; // TODO
+    MEM_d[mru_d].mru = way; // TODO
+    mru_d = way; // TODO
 endfunction
 
 always_comb begin
@@ -184,17 +184,17 @@ always_comb begin
     // assign read port
     for (i = 0; i < NR_ENTRIES; i++) begin
         if (en_i && MEM_d[i].valid && (rtag==MEM_d[i].tag)) begin
-            hit_o = '0; // TODO
-            rdata_o = '0; // TODO
+            hit_o = 1'b1; // TODO
+            rdata_o = MEM_d[i].data; // TODO
             lru_bump(way_index_t'(i));
             break;
         end
     end
     // handle write port
     if (en_i && we_i) begin
-        MEM_d[lru_d].data = '0; // TODO
-        MEM_d[lru_d].tag = '0; // TODO
-        MEM_d[lru_d].valid = '0; // TODO
+        MEM_d[lru_d].data = wdata_i; // TODO
+        MEM_d[lru_d].tag = wtag; // TODO
+        MEM_d[lru_d].valid = 1'b1; // TODO
         lru_bump(lru_d);
     end
     // handle reset/flush/disable
